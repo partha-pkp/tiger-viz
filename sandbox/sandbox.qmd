@@ -1,0 +1,473 @@
+---
+title: "Untitled"
+format: html
+editor: visual
+---
+
+```{r, eval=FALSE}
+
+library(rnaturalearth)
+library(sf)
+library(ggplot2)
+library(viridis)
+library(patchwork)
+
+library(rasterVis)
+library(raster)
+library(elevatr)
+
+# remotes::install_github("rspatial/geodata")
+library(geodata)
+
+# install.packages("rgdal", repos="http://R-Forge.R-project.org") ----------> Worked!!!!!!!
+library(rgdal)
+
+library(rayshader)
+
+library(plotly)
+library(rgl)
+# 
+# map1 <- ne_countries(type = "countries", country = "India",
+#                      scale = "medium", returnclass = "sf")
+# p1 <- ggplot(map1) + geom_sf()
+# 
+# p1
+# 
+# 
+# 
+# d <- worldclim_country(country = "India", var = "tmin",
+#                        path = tempdir())
+# terra::plot(mean(d), plg = list(title = "Min. temperature (C)"))
+
+
+# d2 <- worldclim_country(country = "India", var = "tmin", path=tempdir())
+
+
+d1 <- elevation_30s(country="India", path=tempdir())
+plot(d1)
+
+# Convert the spatraster object to a RasterLayer
+d1_raster <- raster(d1)
+
+# Create a 3D plot
+pp<- plot3D(d1_raster,
+            box = FALSE, col = terrain.colors(100),
+       xlab = "Longitude", ylab = "Latitude", zlab = "Elevation (m)",
+       main = "3D Elevation Map of India",
+       legends = c("Low", "Medium", "High"))
+pp
+
+
+
+typeof(d2)
+getClass(d2)
+is(d1, "spatraster")
+
+# convert s4 to RasterBrick/RasterStack
+r <- brick(d1)
+
+# ------------------------->Working!!!  ------ RGL----------!!!
+# p3d <- plot3D(r, box = FALSE, zscale = 10) 
+
+
+
+# # Convert SpatRaster object to a regular raster object
+# regular_raster <- as(d1, "Raster")
+# 
+# # Convert the raster to a data frame
+# raster_df <- as.data.frame(regular_raster, xy = TRUE)
+# 
+# # Plot the raster data using ggplot2
+# ggplot(raster_df, aes(x = x, y = y)) +
+#   geom_raster() +
+#   scale_fill_gradientn(colors = terrain.colors(10)) +  # Customize color scale if needed
+#   labs(title = "Raster Plot", x = "X Coordinate", y = "Y Coordinate")
+
+
+
+
+
+# rgl::rglwidget()
+
+
+
+```
+
+```{r}
+
+#| title: "A spatial perspective of Tiger-bearing landscapes"
+
+library(raster)
+library(ggplot2)
+library(rayshader)
+library(here)
+library(viridis)
+
+
+raster_data <- raster(here("data","IND_alt.grd"))
+
+shivalik_data <- readxl::read_xlsx(here("data","shivalik_data.xlsx"))
+central_ind_data <- readxl::read_xlsx(here("data", "central_ind_data.xlsx"))
+west_ghats_data <- readxl::read_xlsx(here("data", "west_ghats_data.xlsx"))
+north_east_data <- readxl::read_xlsx(here("data", "north_east_data.xlsx"))
+sundarbans_data <- readxl::read_xlsx(here("data", "sundarbans_data.xlsx"))
+
+# Convert raster to data frame
+raster_df <- as.data.frame(raster_data, xy = TRUE)
+
+
+# Rename columns
+names(raster_df) <- c("x", "y", "Elevation(meters)")
+
+# summary(raster_df)
+
+
+
+# Plot the raster data using ggplot2
+gp1 <- ggplot() +
+  geom_raster(data = raster_df, 
+              aes(x = x, y = y, 
+                  fill = `Elevation(meters)`)) +
+  scale_fill_viridis(option = "inferno",
+                     direction = -1) +  
+  coord_equal() +
+  geom_polygon(data = shivalik_data, 
+               aes(x = x, y = y),
+               alpha = 0.1, 
+               fill = "#E69F00", 
+               color = "#E69F00") +
+  geom_polygon(data = central_ind_data, 
+               aes(x = x, y = y),
+               alpha = 0.1, 
+               fill = "#8C510A", 
+               color = "#8C510A") +
+  geom_polygon(data = west_ghats_data, 
+               aes(x = x, y = y),
+               alpha = 0.1, 
+               fill = "navyblue", 
+               color = "navyblue") +
+  geom_polygon(data = north_east_data, 
+               aes(x = x, y = y),
+               alpha = 0.1, 
+               fill = "#36454F", 
+               color = "#36454F") +
+  geom_polygon(data = sundarbans_data, 
+               aes(x = x, y = y),
+               alpha = 0.1, 
+               fill = "#004D40", 
+               color = "#004D40") +
+  theme_void()+
+  theme(plot.background = element_rect(fill = "white",
+                                       colour = "white"
+                                       )
+        )  
+gp1
+
+
+
+map3d <- plot_gg(gp1,
+                 width=5,
+                 height=5,
+                 scale = 350,
+                 windowsize = c(1000, 1000),
+                 phi = 30,
+                 save_height_matrix = FALSE,
+                 theta = 0,
+                 flat_transparent_bg = TRUE,
+                 invert = FALSE
+                 )
+
+
+
+#------------------- Annotating the Landscapes-------------------------------------
+
+shivalik_coords <- c(x = -300, y = 420, z = -200)
+rgl::text3d(x = shivalik_coords[1], y = shivalik_coords[2], z = shivalik_coords[3],
+            text = "Shivalik Hills", col = "black", cex = 0.9)
+
+rgl::lines3d(c(-300, -300, -300),
+             c(50, 100, 400),
+             c(-200, -200, -200),
+             col = "#E69F00")
+
+
+
+central_ind_coords <- c(x = -300, y = 270, z = 50)
+rgl::text3d(x = central_ind_coords[1], y = central_ind_coords[2], z = central_ind_coords[3],
+            text = "Central India", col = "black", cex = 0.9)
+
+rgl::lines3d(c(-300, -300, -300),
+             c(50, 100, 250),
+             c(50, 50, 50),
+             col = "#8C510A")
+
+
+
+
+
+west_ghats_coords <- c(x = -400, y = 320, z = 300)
+rgl::text3d(x = west_ghats_coords[1], y = west_ghats_coords[2], z = west_ghats_coords[3],
+            text = "Western Ghats", col = "black", cex = 0.9)
+
+
+rgl::lines3d(c(-400, -400, -400),
+             c(50, 100, 300),
+             c(300, 300,300),
+             col = "navyblue")
+
+
+
+
+
+north_east_coords <- c(x = 200, y = 520, z = -200)
+rgl::text3d(x = north_east_coords[1], y = north_east_coords[2], z = north_east_coords[3],
+            text = "North-East Hills", col = "black", cex = 0.9)
+
+rgl::lines3d(c(200, 200, 200),
+             c(50, 100, 500),
+             c(-200, -200, -200),
+             col = "#36454F")
+
+
+
+
+sundarbans_coords <- c(x = 0, y = 170, z = -25)
+rgl::text3d(x = sundarbans_coords[1], y = sundarbans_coords[2], z = sundarbans_coords[3],
+            text = "Sundarbans", col = "black", cex = 0.9)
+rgl::lines3d(c(0, 0, 0),
+             c(50, 100, 150),
+             c(-25, -25, -25),
+             col = "#004D40")
+
+
+
+
+# map3d
+
+
+# Reference lines
+
+
+
+
+
+
+
+# rgl::lines3d(c(50, 50, 50),
+#              c(50, 100, 500),
+#              c(50, 50, 50),
+#              col = "red")
+# 
+# rgl::lines3d(c(100, 100, 100),
+#              c(50, 100, 500),
+#              c(50, 50, 50),
+#              col = "darkgreen")
+
+map3d
+rgl::rglwidget()
+
+
+
+```
+
+```{r}
+
+library(here)
+library(ggplot2)
+library(gganimate)
+library(viridis)
+library(plotly)
+
+line_plot_data <- readxl::read_xlsx(here("data","line_plot_data.xlsx"))
+
+
+p <- ggplot(line_plot_data, aes(x = year, y = population, color = landscape)) +
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  theme(legend.position="none") +
+  scale_x_continuous(breaks = seq(2006,2022,4)) +
+  scale_fill_viridis() +
+  transition_reveal(year) +
+  xlab("Year") +
+  ylab("Tiger Population") +
+  ggtitle("Estimated Tiger population")
+  
+
+# anim_save("line_plot.gif")
+ggplotly(p)
+  
+
+```
+
+```{r}
+
+gp2 <- ggplot() +
+  geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
+  # geom_sf(data = ind_map, aes(geometry = geom)) +
+  scale_fill_viridis(option = "magma",direction = -1) +  # Adjust color palette as needed
+  coord_equal() +
+  geom_polygon(data = polygon_data, aes(x = x, y = y),alpha = 0.2, fill = "lightblue", color = "lightblue") +
+  geom_polygon(data = shivalik_data, aes(x = x, y = y),alpha = 0.2, fill = "red", color = "red") +
+  annotate("text",
+           x=82.51,
+           y=27.89,
+           label = "1",
+           color = "red")
+  # geom_sphere_3d(data=shivalik_data, aes(x=x,y=y, z=1))
+    # annotate("tile", x=c(80), y=c(25), width = 11, height = 5, alpha=0.2, color="blue", fill="blue")
+  # annotate("polygon", x=c(80), y=c(25), alpha=0.2, color="blue", fill="blue")
+  # annotate("rect", xmin=c(90), xmax=c(95), ymin=c(30) , ymax=c(25), alpha=0.2, color="blue", fill="blue")
+gp2
+
+
+
+gp3 <- ggplot() +
+  geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
+  # geom_sf(data = ind_map, aes(geometry = geom)) +
+  scale_fill_viridis(option = "plasma", direction = -1) +  # Adjust color palette as needed
+  coord_equal() +
+  geom_polygon(data = polygon_data, aes(x = x, y = y),alpha = 0.2, fill = "lightblue", color = "lightblue") +
+  geom_polygon(data = shivalik_data, aes(x = x, y = y),alpha = 0.2, fill = "red", color = "red") +
+  annotate("text",
+           x=82.51,
+           y=27.89,
+           label = "1",
+           color = "red")
+  # geom_sphere_3d(data=shivalik_data, aes(x=x,y=y, z=1))
+    # annotate("tile", x=c(80), y=c(25), width = 11, height = 5, alpha=0.2, color="blue", fill="blue")
+  # annotate("polygon", x=c(80), y=c(25), alpha=0.2, color="blue", fill="blue")
+  # annotate("rect", xmin=c(90), xmax=c(95), ymin=c(30) , ymax=c(25), alpha=0.2, color="blue", fill="blue")
+gp3
+
+
+gp4 <- ggplot() +
+  geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
+  # geom_sf(data = ind_map, aes(geometry = geom)) +
+  scale_fill_viridis(option = "inferno",direction = -1) +  # Adjust color palette as needed
+  coord_equal() +
+  geom_polygon(data = polygon_data, aes(x = x, y = y),alpha = 0.2, fill = "lightblue", color = "lightblue") +
+  geom_polygon(data = shivalik_data, aes(x = x, y = y),alpha = 0.2, fill = "red", color = "red") +
+  annotate("text",
+           x=82.51,
+           y=27.89,
+           label = "1",
+           color = "red")
+  # geom_sphere_3d(data=shivalik_data, aes(x=x,y=y, z=1))
+    # annotate("tile", x=c(80), y=c(25), width = 11, height = 5, alpha=0.2, color="blue", fill="blue")
+  # annotate("polygon", x=c(80), y=c(25), alpha=0.2, color="blue", fill="blue")
+  # annotate("rect", xmin=c(90), xmax=c(95), ymin=c(30) , ymax=c(25), alpha=0.2, color="blue", fill="blue")
+gp4
+
+
+gp5 <- ggplot() +
+  geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
+  # geom_sf(data = ind_map, aes(geometry = geom)) +
+  scale_fill_viridis(option = "cividis",direction = -1) +  # Adjust color palette as needed
+  coord_equal() +
+  geom_polygon(data = polygon_data, aes(x = x, y = y),alpha = 0.2, fill = "lightblue", color = "lightblue") +
+  geom_polygon(data = shivalik_data, aes(x = x, y = y),alpha = 0.2, fill = "red", color = "red") +
+  annotate("text",
+           x=82.51,
+           y=27.89,
+           label = "1",
+           color = "red")
+  # geom_sphere_3d(data=shivalik_data, aes(x=x,y=y, z=1))
+    # annotate("tile", x=c(80), y=c(25), width = 11, height = 5, alpha=0.2, color="blue", fill="blue")
+  # annotate("polygon", x=c(80), y=c(25), alpha=0.2, color="blue", fill="blue")
+  # annotate("rect", xmin=c(90), xmax=c(95), ymin=c(30) , ymax=c(25), alpha=0.2, color="blue", fill="blue")
+gp5
+
+
+
+gp6 <- ggplot() +
+  geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
+  # geom_sf(data = ind_map, aes(geometry = geom)) +
+  scale_fill_viridis("mako", direction = -1) +  # Adjust color palette as needed
+  coord_equal() +
+  geom_polygon(data = polygon_data, aes(x = x, y = y),alpha = 0.2, fill = "lightblue", color = "lightblue") +
+  geom_polygon(data = shivalik_data, aes(x = x, y = y),alpha = 0.2, fill = "red", color = "red") +
+  annotate("text",
+           x=82.51,
+           y=27.89,
+           label = "1",
+           color = "red")
+  # geom_sphere_3d(data=shivalik_data, aes(x=x,y=y, z=1))
+    # annotate("tile", x=c(80), y=c(25), width = 11, height = 5, alpha=0.2, color="blue", fill="blue")
+  # annotate("polygon", x=c(80), y=c(25), alpha=0.2, color="blue", fill="blue")
+  # annotate("rect", xmin=c(90), xmax=c(95), ymin=c(30) , ymax=c(25), alpha=0.2, color="blue", fill="blue")
+gp6
+
+
+gp7 <- ggplot() +
+  geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
+  # geom_sf(data = ind_map, aes(geometry = geom)) +
+  scale_fill_viridis("rocket", direction = -1) +  # Adjust color palette as needed
+  coord_equal() +
+  geom_polygon(data = polygon_data, aes(x = x, y = y),alpha = 0.2, fill = "lightblue", color = "lightblue") +
+  geom_polygon(data = shivalik_data, aes(x = x, y = y),alpha = 0.2, fill = "red", color = "red") +
+  annotate("text",
+           x=82.51,
+           y=27.89,
+           label = "1",
+           color = "red")
+  # geom_sphere_3d(data=shivalik_data, aes(x=x,y=y, z=1))
+    # annotate("tile", x=c(80), y=c(25), width = 11, height = 5, alpha=0.2, color="blue", fill="blue")
+  # annotate("polygon", x=c(80), y=c(25), alpha=0.2, color="blue", fill="blue")
+  # annotate("rect", xmin=c(90), xmax=c(95), ymin=c(30) , ymax=c(25), alpha=0.2, color="blue", fill="blue")
+gp7
+
+gp8 <- ggplot() +
+  geom_raster(data = raster_df, aes(x = x, y = y, fill = value)) +
+  # geom_sf(data = ind_map, aes(geometry = geom)) +
+  scale_fill_viridis(option = "turbo", direction = -1) +  # Adjust color palette as needed
+  coord_equal() +
+  geom_polygon(data = polygon_data, aes(x = x, y = y),alpha = 0.2, fill = "lightblue", color = "lightblue") +
+  geom_polygon(data = shivalik_data, aes(x = x, y = y),alpha = 0.2, fill = "red", color = "red") +
+  annotate("text",
+           x=82.51,
+           y=27.89,
+           label = "1",
+           color = "red")
+  # geom_sphere_3d(data=shivalik_data, aes(x=x,y=y, z=1))
+    # annotate("tile", x=c(80), y=c(25), width = 11, height = 5, alpha=0.2, color="blue", fill="blue")
+  # annotate("polygon", x=c(80), y=c(25), alpha=0.2, color="blue", fill="blue")
+  # annotate("rect", xmin=c(90), xmax=c(95), ymin=c(30) , ymax=c(25), alpha=0.2, color="blue", fill="blue")
+gp8
+
+
+```
+
+```{r}
+plot_gg(gp1)
+rgl::rglwidget()
+
+
+```
+
+```{r}
+
+
+plot_gg(gp2)
+rgl::rglwidget()
+
+
+```
+
+```{r}
+
+
+plot_gg(gp4)
+rgl::rglwidget()
+
+
+
+```
+
+```{r}
+
+
+plot_gg(gp5)
+rgl::rglwidget()
+
+```
