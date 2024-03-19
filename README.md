@@ -33,7 +33,7 @@
  
 <h6 align="center">3D Plot - Perspective 1</h6> 
 <p align="center">  
-<img src="sandbox/plot.png" width="500" height="500">
+<img src="sandbox/plot.png" width="600" height="500">
 </p><be>
 
 <h6 align="center">3D Plot - Perspective 2</h6> 
@@ -43,7 +43,7 @@
 
 <h6 align="center">3D Plot - Perspective 3</h6> 
 <p align="center">  
-<img src="sandbox/plot3.png" width="500" height="500">
+<img src="sandbox/plot3.png" width="600" height="500">
 </p><br>
 
 - Further, the tiger population estimates from the report were extracted and presented as a line plot in plotly (the plot below is a static version!).
@@ -51,7 +51,7 @@
 <p align="center"> 
 
 
-<img src="sandbox/line_plot.png" width="700" height="500">
+<img src="sandbox/line_plot.png" width="700" height="350">
 </p><br>
 
 - It can be observed from the plot that there has been an increase in the number of tigers since 2006.
