@@ -4,6 +4,10 @@ author: "Partha Koundinya Panguluri"
 format: dashboard
 theme: slate
 orientation: columns
+
+nav-buttons: 
+- icon: github
+  href: https://github.com/partha-pkp/tiger-viz.git
 ---
 
 

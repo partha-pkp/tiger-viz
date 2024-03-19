@@ -1,0 +1,4 @@
+- source: dashboard.qmd
+  netlify:
+    - id: ac01dc7d-261e-44cf-9c15-3fd0a84021e2
+      url: 'https://warm-rolypoly-6290ab.netlify.app'
