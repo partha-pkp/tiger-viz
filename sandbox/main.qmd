@@ -224,7 +224,7 @@ p <- ggplot(line_plot_data, aes(x = year, y = population, color = landscape)) +
   )
    
 ggplotly(p)
-  
+# ggsave("line_plot.png", plot=p)
 
 ```
 
