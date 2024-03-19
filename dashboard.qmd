@@ -1,0 +1,231 @@
+---
+title: "Tiger Terrains and Timelines: Visualizing India's Tiger Territories"
+author: "Partha Koundinya Panguluri"
+format: dashboard
+theme: slate
+orientation: columns
+---
+
+
+
+## Column 1 {width="60%"}
+
+```{r}
+#| title: "A spatial perspective of Tiger-bearing landscapes of India"
+
+library(raster)
+library(ggplot2)
+library(rayshader)
+library(here)
+library(viridis)
+library(rgl)
+
+
+
+raster_data <- raster(here("data","IND_alt.grd"))
+
+shivalik_data <- readxl::read_xlsx(here("data","shivalik_data.xlsx"))
+central_ind_data <- readxl::read_xlsx(here("data", "central_ind_data.xlsx"))
+west_ghats_data <- readxl::read_xlsx(here("data", "west_ghats_data.xlsx"))
+north_east_data <- readxl::read_xlsx(here("data", "north_east_data.xlsx"))
+sundarbans_data <- readxl::read_xlsx(here("data", "sundarbans_data.xlsx"))
+
+# Convert raster to data frame
+raster_df <- as.data.frame(raster_data, xy = TRUE)
+
+
+# Rename columns
+names(raster_df) <- c("x", "y", "Elevation(meters)")
+
+# summary(raster_df)
+
+
+
+# Plot the raster data using ggplot2
+gp1 <- ggplot() +
+  geom_raster(data = raster_df, 
+              aes(x = x, y = y, 
+                  fill = `Elevation(meters)`)) +
+  scale_fill_viridis(option = "inferno",
+                     direction = -1) +  
+  coord_equal() +
+  geom_polygon(data = shivalik_data, 
+               aes(x = x, y = y),
+               alpha = 0.1, 
+               fill = "#E69F00", 
+               color = "#E69F00") +
+  geom_polygon(data = central_ind_data, 
+               aes(x = x, y = y),
+               alpha = 0.1, 
+               fill = "#8C510A", 
+               color = "#8C510A") +
+  geom_polygon(data = west_ghats_data, 
+               aes(x = x, y = y),
+               alpha = 0.1, 
+               fill = "navyblue", 
+               color = "navyblue") +
+  geom_polygon(data = north_east_data, 
+               aes(x = x, y = y),
+               alpha = 0.1, 
+               fill = "#36454F", 
+               color = "#36454F") +
+  geom_polygon(data = sundarbans_data, 
+               aes(x = x, y = y),
+               alpha = 0.1, 
+               fill = "#004D40", 
+               color = "#004D40") +
+  theme_void() +
+  theme(legend.text = element_text(color = "white"),
+        legend.title = element_text(color = "white")
+        )
+
+# gp1
+
+
+
+map3d <- plot_gg(gp1,
+                 width=5,
+                 height=5,
+                 scale = 350,
+                 windowsize = c(1000, 1000),
+                 phi = 45,
+                 theta = -30,
+                 zoom = 0.7,
+                 save_height_matrix = FALSE,
+                 flat_transparent_bg = TRUE,
+                 invert = FALSE,
+                 background = "black"
+                 )
+
+
+
+#------------------- Annotating the Landscapes-------------------------------------
+
+shivalik_coords <- c(x = -300, y = 420, z = -200)
+rgl::text3d(x = shivalik_coords[1], y = shivalik_coords[2], z = shivalik_coords[3],
+            text = "Shivalik Hills", col = "white", cex = 1.3)
+
+rgl::lines3d(c(-300, -300, -300),
+             c(50, 100, 400),
+             c(-200, -200, -200),
+             col = "#E69F00")
+
+
+
+central_ind_coords <- c(x = -300, y = 270, z = 50)
+rgl::text3d(x = central_ind_coords[1], y = central_ind_coords[2], z = central_ind_coords[3],
+            text = "Central India", col = "white", cex = 1.3)
+
+rgl::lines3d(c(-300, -300, -300),
+             c(50, 100, 250),
+             c(50, 50, 50),
+             col = "#8C510A")
+
+
+
+
+
+west_ghats_coords <- c(x = -400, y = 380, z = 300)
+rgl::text3d(x = west_ghats_coords[1], y = west_ghats_coords[2], z = west_ghats_coords[3],
+            text = "Western Ghats", col = "white", cex = 1.3)
+
+
+rgl::lines3d(c(-400, -400, -400),
+             c(50, 100, 360),
+             c(300, 300,300),
+             col = "navyblue")
+
+
+
+
+
+north_east_coords <- c(x = 200, y = 520, z = -200)
+rgl::text3d(x = north_east_coords[1], y = north_east_coords[2], z = north_east_coords[3],
+            text = "North-East Hills", col = "white", cex = 1.3)
+
+rgl::lines3d(c(200, 200, 200),
+             c(50, 100, 500),
+             c(-200, -200, -200),
+             col = "#36454F")
+
+
+
+
+sundarbans_coords <- c(x = 0, y = 170, z = -25)
+rgl::text3d(x = sundarbans_coords[1], y = sundarbans_coords[2], z = sundarbans_coords[3],
+            text = "Sundarbans", col = "white", cex = 1.3)
+rgl::lines3d(c(0, 0, 0),
+             c(50, 100, 150),
+             c(-25, -25, -25),
+             col = "#004D40")
+
+
+
+
+# map3d
+
+
+# Reference lines
+
+
+# rgl::lines3d(c(50, 50, 50),
+#              c(50, 100, 500),
+#              c(50, 50, 50),
+#              col = "red")
+# 
+# rgl::lines3d(c(100, 100, 100),
+#              c(50, 100, 500),
+#              c(50, 50, 50),
+#              col = "darkgreen")
+
+
+
+# Render the 3D plot with an interactive widget (for html output)
+rgl::rglwidget()
+
+
+
+
+
+```
+
+
+
+
+## Column 2{width="40%"}
+
+
+
+```{r}
+#| title: "Temporal trend in tiger population"
+
+library(here)
+library(ggplot2)
+library(gganimate)
+library(viridis)
+library(plotly)
+
+line_plot_data <- readxl::read_xlsx(here("data","line_plot_data.xlsx"))
+
+
+p <- ggplot(line_plot_data, aes(x = year, y = population, color = landscape)) +
+  geom_line() +
+  geom_point() +
+  theme_dark() +
+  scale_x_continuous(breaks = seq(2006,2022,4)) +
+  scale_fill_viridis(option = "mako") +
+  xlab("Year") +
+  ylab("Tiger Population") +
+  theme(axis.title.x = element_text(colour = "gray"),
+        axis.title.y = element_text(colour = "gray"),
+        legend.position="none",
+        panel.background = element_rect(fill = 'black', colour = 'black'),
+        plot.background = element_rect(fill = 'black', colour = 'black')
+  )
+   
+ggplotly(p)
+  
+
+```
+
+
