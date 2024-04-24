@@ -17,6 +17,8 @@ nav-buttons:
 ```{r}
 #| title: "A spatial perspective of Tiger-bearing landscapes of India"
 
+# Installing necessary libraries
+
 library(raster)
 library(ggplot2)
 library(rayshader)
@@ -25,14 +27,21 @@ library(viridis)
 library(rgl)
 
 
-
+# Loading the spatial data of the India's terrain from the "data" folder
 raster_data <- raster(here("data","IND_alt.grd"))
 
+# Loding the files containing the coordinates of the tiger-bearing habitats
 shivalik_data <- readxl::read_xlsx(here("data","shivalik_data.xlsx"))
 central_ind_data <- readxl::read_xlsx(here("data", "central_ind_data.xlsx"))
 west_ghats_data <- readxl::read_xlsx(here("data", "west_ghats_data.xlsx"))
 north_east_data <- readxl::read_xlsx(here("data", "north_east_data.xlsx"))
 sundarbans_data <- readxl::read_xlsx(here("data", "sundarbans_data.xlsx"))
+
+# The idea here is to develop a 3D plot of the Indian terrain based on the spatial data, and then, highlight the tiger-bearing habitats
+# To achieve this, initially a 2D plot was created using ggplot.Further, a 3D was generated extracting information from the 2D plot using "Rayshader" package
+
+
+#---------------------------Creating 2D plot-------------------------
 
 # Convert raster to data frame
 raster_df <- as.data.frame(raster_data, xy = TRUE)
@@ -47,12 +56,15 @@ names(raster_df) <- c("x", "y", "Elevation(meters)")
 
 # Plot the raster data using ggplot2
 gp1 <- ggplot() +
+  #geom_raster supports rater data
   geom_raster(data = raster_df, 
               aes(x = x, y = y, 
                   fill = `Elevation(meters)`)) +
+  # filling the map with colorblind-friendly colors
   scale_fill_viridis(option = "inferno",
                      direction = -1) +  
   coord_equal() +
+  # creating overlays of the habitats using geom_polygon
   geom_polygon(data = shivalik_data, 
                aes(x = x, y = y),
                alpha = 0.1, 
@@ -78,6 +90,7 @@ gp1 <- ggplot() +
                alpha = 0.1, 
                fill = "#004D40", 
                color = "#004D40") +
+  # adjusting the background of the plot
   theme_void() +
   theme(legend.text = element_text(color = "white"),
         legend.title = element_text(color = "white")
@@ -86,7 +99,9 @@ gp1 <- ggplot() +
 # gp1
 
 
+#---------------------------Generating 3D plot-------------------------
 
+# plot_gg function from the rayshader package converts 2D plots to 3D
 map3d <- plot_gg(gp1,
                  width=5,
                  height=5,
@@ -105,10 +120,14 @@ map3d <- plot_gg(gp1,
 
 #------------------- Annotating the Landscapes-------------------------------------
 
+# Locating the "Shivalik Hills" coordinates
 shivalik_coords <- c(x = -300, y = 420, z = -200)
+
+# Adding text
 rgl::text3d(x = shivalik_coords[1], y = shivalik_coords[2], z = shivalik_coords[3],
             text = "Shivalik Hills", col = "white", cex = 1.3)
 
+# Generating a line (based on the coordinates) to connect the text with the corresponding region
 rgl::lines3d(c(-300, -300, -300),
              c(50, 100, 400),
              c(-200, -200, -200),
@@ -116,10 +135,14 @@ rgl::lines3d(c(-300, -300, -300),
 
 
 
+# Locating the "Central India" coordinates
 central_ind_coords <- c(x = -300, y = 270, z = 50)
+
+# Adding text
 rgl::text3d(x = central_ind_coords[1], y = central_ind_coords[2], z = central_ind_coords[3],
             text = "Central India", col = "white", cex = 1.3)
 
+# Generating a line (based on the coordinates) to connect the text with the corresponding region
 rgl::lines3d(c(-300, -300, -300),
              c(50, 100, 250),
              c(50, 50, 50),
@@ -128,12 +151,14 @@ rgl::lines3d(c(-300, -300, -300),
 
 
 
-
+# Locating the "Western Ghats" coordinates
 west_ghats_coords <- c(x = -400, y = 380, z = 300)
+
+# Adding text
 rgl::text3d(x = west_ghats_coords[1], y = west_ghats_coords[2], z = west_ghats_coords[3],
             text = "Western Ghats", col = "white", cex = 1.3)
 
-
+# Generating a line (based on the coordinates) to connect the text with the corresponding region
 rgl::lines3d(c(-400, -400, -400),
              c(50, 100, 360),
              c(300, 300,300),
@@ -142,11 +167,14 @@ rgl::lines3d(c(-400, -400, -400),
 
 
 
-
+# Locating the "North-East Hills" coordinates
 north_east_coords <- c(x = 200, y = 520, z = -200)
+
+# Adding text
 rgl::text3d(x = north_east_coords[1], y = north_east_coords[2], z = north_east_coords[3],
             text = "North-East Hills", col = "white", cex = 1.3)
 
+# Generating a line (based on the coordinates) to connect the text with the corresponding region
 rgl::lines3d(c(200, 200, 200),
              c(50, 100, 500),
              c(-200, -200, -200),
@@ -154,10 +182,14 @@ rgl::lines3d(c(200, 200, 200),
 
 
 
-
+# Locating the "Sundarbans" coordinates
 sundarbans_coords <- c(x = 0, y = 170, z = -25)
+
+# Adding text
 rgl::text3d(x = sundarbans_coords[1], y = sundarbans_coords[2], z = sundarbans_coords[3],
             text = "Sundarbans", col = "white", cex = 1.3)
+
+# Generating a line (based on the coordinates) to connect the text with the corresponding region
 rgl::lines3d(c(0, 0, 0),
              c(50, 100, 150),
              c(-25, -25, -25),
@@ -169,7 +201,10 @@ rgl::lines3d(c(0, 0, 0),
 # map3d
 
 
-# Reference lines
+
+#---------------Reference lines-----------------
+# Plotting reference lines can be helpful to determine the coordinates for the annotations
+# NOTE: Coordinates for the annotations are not latitudes and longitudes. They are the x,y and z coordinates of the "rgl" image
 
 
 # rgl::lines3d(c(50, 50, 50),
@@ -188,6 +223,10 @@ rgl::lines3d(c(0, 0, 0),
 rgl::rglwidget()
 
 
+#------------------Saving as an image-----------------
+
+# Different perspectives can be obtained by varying "phi" and "theta" values in "map3d"
+# render_snapshot("./figures/plot4.png")
 
 
 
@@ -203,18 +242,26 @@ rgl::rglwidget()
 ```{r}
 #| title: "Temporal trend in tiger population"
 
+# Installing necessary libraries
 library(here)
 library(ggplot2)
 library(gganimate)
 library(viridis)
 library(plotly)
 
+
+# Loding the data
 line_plot_data <- readxl::read_xlsx(here("data","line_plot_data.xlsx"))
 
+#--------------------------Plotting--------------------------
 
-p <- ggplot(line_plot_data, aes(x = year, y = population, color = landscape)) +
+p <- ggplot(line_plot_data, 
+            aes(x = year, y = population, color = landscape)) +
+  # geom_line represents the trend in the population
   geom_line() +
+  # geom_point specifies the population for given year
   geom_point() +
+  #---------Customising the plot---------------
   theme_dark() +
   scale_x_continuous(breaks = seq(2006,2022,4)) +
   scale_fill_viridis(option = "mako") +
@@ -227,8 +274,9 @@ p <- ggplot(line_plot_data, aes(x = year, y = population, color = landscape)) +
         plot.background = element_rect(fill = 'black', colour = 'black')
   )
    
+# Creating the interactive plot
 ggplotly(p)
-  
+# ggsave("./figures/line_plot.png", plot=p)
 
 ```
 

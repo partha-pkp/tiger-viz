@@ -183,6 +183,7 @@ rgl::lines3d(c(0, 0, 0),
 rgl::rglwidget()
 
 
+# Different perspectives can be obtained by varying "phi" and "theta" values in "map3d"
 # render_snapshot("plot4.png")
 
 
