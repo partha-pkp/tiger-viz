@@ -23,7 +23,8 @@
 ## Data
 - The [NTCA report](https://ntca.gov.in/assets/uploads/Reports/AITM/status_of_tiger-copredators-2022.pdf) - obtained from [NTCA official website](ntca.gov.in)
 - [Spatial data](https://www.diva-gis.org/gdata) of India
-
+- The `xlsx` files titled `central_ind_data.xlsx`. `north_east_data.xlsx`, `shivalik_data.xlsx`, `sundarbans_data.xlsx`, and `west_ghats_data.xlsx` contain the latitude and longitude coordinates of each habitat which were mapped manually from the NTCA report
+- The `line_plot_data.xlsx` file was developed based on the Tabular data in `Table 1.3.2` of the NTCA report
 
 ## Visualisations (Glimpse!)
 - For the 3D plot,
@@ -56,4 +57,16 @@
 
 - It can be observed from the plot that there has been an increase in the number of tigers since 2006.
 - Hopefully, the conservation efforts will continue to yield much better results. 🤞🤞
+
+### Repo Organization
+
+The following are the folders involved in the Project repository.
+
+-   **dashboard.qmd:** The source code file.
+
+-   **data/:** Used for storing any necessary data files for the project, such as input files.
+
+-   **figures/:** Used for storing the output images.
+
+-   **sandbox/:** This is the workspace for _Brainstorming_ (Does not impact the workflow).
 
