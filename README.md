@@ -23,7 +23,7 @@
 ## Data
 - The [NTCA report](https://ntca.gov.in/assets/uploads/Reports/AITM/status_of_tiger-copredators-2022.pdf) - obtained from [NTCA official website](ntca.gov.in)
 - [Spatial data](https://www.diva-gis.org/gdata) of India
-- The `xlsx` files titled `central_ind_data.xlsx`. `north_east_data.xlsx`, `shivalik_data.xlsx`, `sundarbans_data.xlsx`, and `west_ghats_data.xlsx` contain the latitude and longitude coordinates of each habitat which were mapped manually from the NTCA report
+- The `xlsx` files titled `central_ind_data.xlsx`, `north_east_data.xlsx`, `shivalik_data.xlsx`, `sundarbans_data.xlsx`, and `west_ghats_data.xlsx` contain the latitude and longitude coordinates of each habitat which were mapped manually from the NTCA report
 - The `line_plot_data.xlsx` file was developed based on the Tabular data in `Table 1.3.2` of the NTCA report
 
 ## Visualisations (Glimpse!)
