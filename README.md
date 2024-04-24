@@ -63,7 +63,9 @@
 The following are the folders involved in the Project repository.
 
 -   **dashboard.qmd:** The source code file.
-
+  
+-   **tiger-viz.Rproj:** The _R_ project file
+  
 -   **data/:** Used for storing any necessary data files for the project, such as input files.
 
 -   **figures/:** Used for storing the output images.
