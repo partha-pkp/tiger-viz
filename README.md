@@ -1,5 +1,18 @@
 # Tiger Terrains and Timelines: Visualizing India’s Tiger Territories 🐯
 
+⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
+
+## This project received an honorable mention at [Data Visualization Challenge 2024](https://data.library.arizona.edu/data-viz-challenge/previous-winners) !!
+<div align="center">
+<h3>
+<a href="https://tiger-viz.netlify.app/">Check the dashboard now!!</a>
+</h3>
+</div>
+⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
+
+
+
+
 ## Background
 - The recent report on the status of tigers by the National Tiger Conservation Authority (NTCA) of India estimates a significant increase in the tiger population across the country.
 - The tiger-populated habitats within the nation have been categorized into 5 landscapes viz.
@@ -11,13 +24,6 @@
  
 ## Aim
 - The present work aims to visualize these landscapes as an interactive 3D model using spatial data, and the tiger population using a line plot.
-
-<div align="center">
-
-<h3>
-<a href="https://tiger-viz.netlify.app/">Check the dashboard now!!</a>
-</h3>
-</div>
 
 
 ## Data
